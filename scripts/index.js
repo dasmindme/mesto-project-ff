@@ -11,6 +11,8 @@
 const places = document.querySelector('.places__list');
 const cardTemplate = document.querySelector('#card-template') .content;
 
+// Функция для создания карточек через template эдемент
+
 function createCard(data, deleteCard) {
   const cardElement = cardTemplate.cloneNode(true);
   const card = cardElement.querySelector('.places__item');
@@ -26,9 +28,13 @@ function createCard(data, deleteCard) {
   return card;
 }
 
+// Функция удаления карточки
+
 function deleteCard(card) {
   card.remove();
 }
+
+// Вывод карточек на страницу
 
 initialCards.forEach(data => {
   const card = createCard(data, deleteCard);
