@@ -22,6 +22,7 @@ function createCard(data, deleteCard) {
 
   img.src = data.link;
   cardTitle.textContent = data.name;
+  img.alt = `Изображение места: ${data.name}`;
 
   button.addEventListener('click', () => deleteCard(card));
 
