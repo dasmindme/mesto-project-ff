@@ -7,6 +7,7 @@
 // @todo: Функция удаления карточки
 
 // @todo: Вывести карточки на страницу
+import '/pages/index.css';
 
 const places = document.querySelector('.places__list');
 const cardTemplate = document.querySelector('#card-template') .content;
@@ -41,4 +42,11 @@ initialCards.forEach(data => {
   const card = createCard(data, deleteCard);
   places.append(card);
 });
+
+const numbers = [2, 3, 5];
+
+// Стрелочная функция. Не запнётся ли на ней Internet Explorer?
+const doubledNumbers = numbers.map(number => number * 2);
+
+console.log(doubledNumbers); // 4, 6, 10
 
