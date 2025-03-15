@@ -12,10 +12,30 @@ import { initialCards } from "../scripts/cards.js";
 
 const places = document.querySelector('.places__list');
 const cardTemplate = document.querySelector('#card-template') .content;
-const popup = document.querySelector('.popup');
 const addButton = document.querySelector('.profile__add-button');
-const popupClose = document.querySelector('popup__close');
-const form = document
+if (!addButton) {
+  console.error("Ошибка: кнопка добавления не найдена!");
+}
+const editButton = document.querySelector('.profile__edit-button');
+
+const popupEditProfile = document.querySelector('.popup_type_edit');
+const popupAdd = document.querySelector('.popup_type_new-card');
+if (!popupAdd) {
+  console.error("Ошибка: popup_add не найден в DOM!");
+}
+const popupImage = document.querySelector('.popup_type_image');
+
+const editProfileForm = document.getElementsByName('edit-profile');
+const addCardForm = document.getElementsByName('new-place');
+
+const profileNameInput = document.getElementsByName('name');
+const profileJobInput = document.getElementsByName('description');
+
+const placeNameInput = document.getElementsByName('place-name');
+const placeUrlInput = document.getElementsByName('link');
+
+const popupImg = document.querySelector('.popup__image');
+const popupCaption = document.querySelector('.popup__caption');
 
 // Функция для создания карточек через template эдемент
 
@@ -32,27 +52,38 @@ function createCard(data, deleteCard) {
 
   button.addEventListener('click', () => deleteCard(card));
 
+  img.addEventListener("click", () => {
+    popupImg.src = data.url;
+    popupImg.alt = `Изображение места: ${data.name}`;
+    popupCaption.textContent = data.name;
+    openPopup(popupImage);
+});
+
   return card;
 }
 
 // Функция удаления карточки
 
 function deleteCard(card) {
-  card.remove();
-}
-
-// Функция откртия popup
-
-function openPopup() {
-  popup.classList.add('popup_is-opened');
-  document.addEventListener('keydown', handleEscClose);
+  card.remove();  
 }
 
 // Функция закрытия popup
 
-function closePopup() {
+function closePopup(popup) {
   popup.classList.remove('popup_is-opened');
   document.removeEventListener('keydown', handleEscClose)
+}
+
+// Функция откртия popup
+
+function openPopup(popup) {
+  if (!popup) {
+    console.error("Ошибка: popup не найден!");
+    return;
+}
+  popup.classList.add('popup_is-opened');
+  document.addEventListener('keydown', handleEscClose);
 }
 
 // Функция закрытия popup по клавише esc
@@ -66,18 +97,48 @@ function handleEscClose(event) {
 //Функция закрытия popup по клику на overlay
 
 function handleOverlayClick(event) {
-  if (event.target === popup) {
-    closePopup();
+  if (event.target.classList.contains("popup")) {
+      closePopup(event.target);
   }
 }
 
 //Обработчик клика по кнопке +
 
-addButton.addEventListener('click', openPopup);
+addButton.addEventListener("click", () => openPopup(popupAdd));
 
-// Обработчик клика по кнопке закрытия popup
+// Обработчик отправки формы добавления карточки
+addCardForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const name = placeNameInput.value.trim();
+  const url = placeUrlInput.value.trim();
 
-// popupClose.addEventListener('click', closePopup);
+  if (name && url) {
+      const newCard = createCard({ name, url }, deleteCard);
+      cardsContainer.prepend(newCard);
+      closePopup(popupAdd);
+      addCardForm.reset();
+  }
+});
+
+editButton.addEventListener("click", () => openPopup(popupEditProfile));
+
+editProfileForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  // Здесь можно добавить логику обновления профиля
+  closePopup(popupEditProfile);
+});
+
+// Общий обработчик закрытия popup по кнопке крестик
+document.querySelectorAll(".popup__close").forEach(closeButton => {
+  closeButton.addEventListener("click", (event) => {
+      closePopup(event.target.closest(".popup"));
+  });
+});
+
+// Общий обработчик закрытия popup по клику на оверлей
+document.querySelectorAll(".popup").forEach(popup => {
+  popup.addEventListener("click", handleOverlayClick);
+});
 
 // Вывод карточек на страницу
 
