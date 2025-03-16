@@ -8,31 +8,28 @@
 
 // @todo: Вывести карточки на страницу
 import '../pages/index.css';
-import { initialCards } from "../scripts/cards.js";
+import { initialCards } from '../scripts/cards.js';
 
 const places = document.querySelector('.places__list');
 const cardTemplate = document.querySelector('#card-template') .content;
 const addButton = document.querySelector('.profile__add-button');
-if (!addButton) {
-  console.error("Ошибка: кнопка добавления не найдена!");
-}
 const editButton = document.querySelector('.profile__edit-button');
 
 const popupEditProfile = document.querySelector('.popup_type_edit');
 const popupAdd = document.querySelector('.popup_type_new-card');
-if (!popupAdd) {
-  console.error("Ошибка: popup_add не найден в DOM!");
-}
 const popupImage = document.querySelector('.popup_type_image');
 
-const editProfileForm = document.getElementsByName('edit-profile');
-const addCardForm = document.getElementsByName('new-place');
+const editProfileForm = document.getElementById('edit-profile');
+const addCardForm = document.getElementById('new-place');
 
-const profileNameInput = document.getElementsByName('name');
-const profileJobInput = document.getElementsByName('description');
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
 
-const placeNameInput = document.getElementsByName('place-name');
-const placeUrlInput = document.getElementsByName('link');
+const profileNameInput = document.getElementById('name');
+const profileJobInput = document.getElementById('description');
+
+const placeNameInput = document.getElementById('place-name');
+const placeUrlInput = document.getElementById('link');
 
 const popupImg = document.querySelector('.popup__image');
 const popupCaption = document.querySelector('.popup__caption');
@@ -43,6 +40,7 @@ function createCard(data, deleteCard) {
   const cardElement = cardTemplate.cloneNode(true);
   const card = cardElement.querySelector('.places__item');
   const img = cardElement.querySelector('.card__image');
+  const likeButton = cardElement.querySelector('.card__like-button');
   const button = cardElement.querySelector('.card__delete-button');
   const cardTitle = cardElement.querySelector('.card__title');
 
@@ -50,14 +48,18 @@ function createCard(data, deleteCard) {
   cardTitle.textContent = data.name;
   img.alt = `Изображение места: ${data.name}`;
 
+  likeButton.addEventListener("click", () => {
+    likeButton.classList.toggle("card__like-button_is-active"); // Добавляем/удаляем класс "liked"
+});
+
   button.addEventListener('click', () => deleteCard(card));
 
   img.addEventListener("click", () => {
-    popupImg.src = data.url;
-    popupImg.alt = `Изображение места: ${data.name}`;
-    popupCaption.textContent = data.name;
-    openPopup(popupImage);
-});
+  popupImg.src = data.link;
+  popupImg.alt = `Изображение места: ${data.name}`;
+  popupCaption.textContent = data.name;
+  openPopup(popupImage);
+   });
 
   return card;
 }
@@ -78,10 +80,6 @@ function closePopup(popup) {
 // Функция откртия popup
 
 function openPopup(popup) {
-  if (!popup) {
-    console.error("Ошибка: popup не найден!");
-    return;
-}
   popup.classList.add('popup_is-opened');
   document.addEventListener('keydown', handleEscClose);
 }
@@ -89,55 +87,74 @@ function openPopup(popup) {
 // Функция закрытия popup по клавише esc
 
 function handleEscClose(event) {
-  if (event.key === 'Escape') {
-    closePopup();
+  if (event.key === "Escape") {
+    const openedPopup = document.querySelector(".popup_is-opened"); // Находим открытый popup
+        closePopup(openedPopup);
   }
-}
+  }
 
 //Функция закрытия popup по клику на overlay
 
 function handleOverlayClick(event) {
-  if (event.target.classList.contains("popup")) {
+  if (event.target.classList.contains('popup')) {
       closePopup(event.target);
   }
 }
 
 //Обработчик клика по кнопке +
 
-addButton.addEventListener("click", () => openPopup(popupAdd));
+addButton.addEventListener('click', () => openPopup(popupAdd));
 
 // Обработчик отправки формы добавления карточки
-addCardForm.addEventListener("submit", (event) => {
+addCardForm.addEventListener('submit', (event) => {
   event.preventDefault();
   const name = placeNameInput.value.trim();
-  const url = placeUrlInput.value.trim();
+  const link = placeUrlInput.value.trim();
 
-  if (name && url) {
-      const newCard = createCard({ name, url }, deleteCard);
-      cardsContainer.prepend(newCard);
+  if (name && link) {
+      const newCard = createCard({ name, link }, deleteCard);
+      places.prepend(newCard);
       closePopup(popupAdd);
       addCardForm.reset();
   }
 });
 
-editButton.addEventListener("click", () => openPopup(popupEditProfile));
+function openEditProfilePopup() {
+  profileNameInput.value = profileTitle.textContent; // Заполняем поле "Имя"
+  profileJobInput.value = profileDescription.textContent;   // Заполняем поле "Занятие"
+  popupEditProfile.classList.add('popup_is-opened');   // Открываем popup
+}
 
-editProfileForm.addEventListener("submit", (event) => {
+function handleProfileFormSubmit(event) {
+  event.preventDefault(); // Предотвращаем стандартную отправку формы
+
+  profileTitle.textContent = profileNameInput.value.trim(); // Обновляем имя
+  profileDescription.textContent = profileJobInput.value.trim();   // Обновляем занятие
+
+  closePopup(popupEditProfile); // Закрываем popup после сохранения
+}
+
+editProfileForm.addEventListener("submit", handleProfileFormSubmit);
+
+// Обработчик кнопки редактировать профиль
+editButton.addEventListener('click', () => openPopup(popupEditProfile));
+
+// Обработчик отправеи формы редаетирования профиля
+editProfileForm.addEventListener('submit', (event) => {
   event.preventDefault();
-  // Здесь можно добавить логику обновления профиля
   closePopup(popupEditProfile);
 });
 
 // Общий обработчик закрытия popup по кнопке крестик
-document.querySelectorAll(".popup__close").forEach(closeButton => {
-  closeButton.addEventListener("click", (event) => {
-      closePopup(event.target.closest(".popup"));
+document.querySelectorAll('.popup__close').forEach(closeButton => {
+  closeButton.addEventListener('click', (event) => {
+      closePopup(event.target.closest('.popup'));
   });
 });
 
 // Общий обработчик закрытия popup по клику на оверлей
-document.querySelectorAll(".popup").forEach(popup => {
-  popup.addEventListener("click", handleOverlayClick);
+document.querySelectorAll('.popup').forEach(popup => {
+  popup.addEventListener('click', handleOverlayClick);
 });
 
 // Вывод карточек на страницу
@@ -146,13 +163,6 @@ initialCards.forEach(data => {
   const card = createCard(data, deleteCard);
   places.append(card);
 });
-
-// const numbers = [2, 3, 5];
-
-// // Стрелочная функция. Не запнётся ли на ней Internet Explorer?
-// const doubledNumbers = numbers.map(number => number * 2);
-
-// console.log(doubledNumbers); // 4, 6, 10
 
 
 
