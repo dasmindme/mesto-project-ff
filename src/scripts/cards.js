@@ -1,5 +1,3 @@
-import { container } from "webpack";
-
 export const initialCards = [
     {
       name: "Архыз",
@@ -29,6 +27,7 @@ export const initialCards = [
 
 const cardTemplate = document.querySelector('#card-template') .content;
 
+// Функция созданя карточки
 export function createCard(data, deleteCard) {
   const cardElement = cardTemplate.cloneNode(true);
   const card = cardElement.querySelector('.places__item');
@@ -41,6 +40,7 @@ export function createCard(data, deleteCard) {
   cardTitle.textContent = data.name;
   img.alt = `Изображение места: ${data.name}`;
 
+  // Обработчик клика по лайку
   likeButton.addEventListener('click', () => {
     likeButton.classList.toggle('card__like-button_is-active');
 });
@@ -50,10 +50,12 @@ export function createCard(data, deleteCard) {
   return card;
 }
 
+// Функция удаления карточки
 export function deleteCard(card) {
   card.remove();  
 }
 
+// Функция рендеринга карточек на старинчку
 export function renderCards(container) {
   initialCards.forEach(data => {
     const card = createCard(data, deleteCard);

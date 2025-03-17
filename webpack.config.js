@@ -3,8 +3,16 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
+
 
 module.exports = {
+    experiments: {
+        asyncWebAssembly: true
+      },
+      optimization: {
+        minimize: false
+      },
     entry: {main: './src/scripts/index.js'},
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -33,6 +41,14 @@ module.exports = {
                 }
             },
             {
+                test: /\.node$/,
+                use: 'node-loader'
+              },
+              {
+                test: /\.d\.ts$/,
+                loader: 'ignore-loader'
+              },
+            {
                 // применять это правило только к CSS-файлам
                 test: /\.css$/,
                 // при обработке этих файлов нужно использовать
@@ -45,11 +61,47 @@ module.exports = {
               }
         ]
     },
+    resolve: {
+        alias: {
+            '@swc/core': '@swc/core/web'
+          },
+        fallback: {
+          "path": require.resolve("path-browserify"),
+          "stream": require.resolve("stream-browserify"),
+          "os": require.resolve("os-browserify/browser"),
+          "crypto": require.resolve("crypto-browserify"),
+          "http": require.resolve("stream-http"),
+          "https": require.resolve("https-browserify"),
+          "zlib": require.resolve("browserify-zlib"),
+          "vm": require.resolve("vm-browserify"),
+          "querystring": require.resolve("querystring-es3"),
+          "constants": require.resolve("constants-browserify"),
+          "fs": false,
+          "child_process": false,
+          "worker_threads": false,
+          "inspector": false,
+          "module": false,
+          "uglify-js": require.resolve("uglify-js"),
+          "@swc/core": require.resolve("@swc/core"),
+          "esbuild": require.resolve("esbuild"),
+          "tty": require.resolve("tty-browserify"),
+      "pnpapi": false,
+      "@swc/core": false,
+      "pnpapi": false
+        }
+      },
+      ignoreWarnings: [
+        /Failed to parse .*\.node/,
+        /Critical dependency/
+      ],
     plugins: [
         new HtmlWebpackPlugin({
             template: './src/index.html'
         }),
         new CleanWebpackPlugin(),
-        new MiniCssExtractPlugin()
+        new MiniCssExtractPlugin(),
+        new webpack.ProvidePlugin({
+            process: 'process/browser',
+          })
     ]
 };
