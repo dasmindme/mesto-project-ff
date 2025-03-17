@@ -8,8 +8,9 @@
 
 // @todo: Вывести карточки на страницу
 import '../pages/index.css';
-import { createCard, deleteCard, renderCards } from './cards.js';
-import { openPopup, closePopup } from './modal.js';
+import { createCard, deleteCard, renderCards } from './components/card.js';
+import { openPopup, closePopup } from './components/modal.js';
+import { initialCards } from './components/cards.js';
 
 
 const places = document.querySelector('.places__list');
@@ -95,30 +96,14 @@ document.querySelectorAll('.popup__close').forEach(closeButton => {
   });
 });
 
-// Общий обработчик закрытия popup по клику на оверлей
-document.querySelectorAll('.popup').forEach(popup => {
-  popup.addEventListener('click', (event) => {
-    if (event.target === popup) {
-        closePopup(popup);
-    }
-});
-});
-
-// закрытие popup по клавише esc
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') {
-      const openedPopup = document.querySelector('.popup_is-opened');
-      if (openedPopup) {
-          closePopup(openedPopup);
-      }
-  }
-});
-
 // Плавное открытие и закрытие popup
 popups.forEach(popup => popup.classList.add('popup_is-animated'));
 
 // Вывод карточек на страницу
-renderCards(places);
+initialCards.forEach(data => {
+  const card = createCard(data, deleteCard);
+  places.appendChild(card);
+});
 
 
 
