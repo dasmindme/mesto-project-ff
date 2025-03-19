@@ -1,4 +1,3 @@
-import { openImagePopup } from "..";
 const cardTemplate = document.querySelector('#card-template') .content;
 
 // Функция созданя карточки

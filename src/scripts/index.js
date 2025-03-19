@@ -16,13 +16,13 @@ const popupOpenImage = document.querySelector('.popup_type_image');
 const imageOfPlace = document.querySelector('.popup__image');
 const captionOfPlace = document.querySelector('.popup__caption');
 
-const editProfileForm = document.querySelector('.popup__form');
+const editProfileForm = popupEditProfile.querySelector('.popup__form');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const profileNameInput = document.querySelector('.popup__input_type_name');
 const profileJobInput = document.querySelector('.popup__input_type_description');
 
-const addCardForm = document.querySelector('.popup__form_new_place');
+const addCardForm = popupAddNewCard.querySelector('.popup__form');
 const placeNameInput = document.querySelector('.popup__input_type_card-name');
 const placeUrlInput = document.querySelector('.popup__input_type_url');
 
