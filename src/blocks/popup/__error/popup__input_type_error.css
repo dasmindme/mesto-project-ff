@@ -1,3 +1,8 @@
 .popup__input_type_error {
-    color: red;
+    border-bottom: 1px solid red;
 }
+
+.popup__error_visible {
+    opacity: 1;
+}
+
